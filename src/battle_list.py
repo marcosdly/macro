@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 from pynput.mouse import Controller, Button
 import time
 import cv2 as cv
+import numpy as np
+
+_enemy_target_region: Rectangle | None = None
 
 
 class BattleList:
@@ -19,6 +22,19 @@ class BattleList:
     self.window_title = self._window_title()
     self.topmost_enemy = self._topmost_enemy()
     self.enemy_name = self._enemy_name()
+
+    global _enemy_target_region
+    _, texts = self.enemy_name
+    if not _enemy_target_region and len(texts):
+      _enemy_target_region = self._enemy_target_region()
+
+  def _enemy_target_region(self) -> Rectangle | None:
+    rectangles, _ = self.enemy_name
+    if not len(rectangles):
+      return None
+    leftmost = min(rectangles, key=lambda r: r.top_left[0])
+    x, y = self.topmost_enemy.top_left
+    return Rectangle((x, y), (leftmost.top_left[0], y + self.topmost_enemy.height))
 
   def _window_title(self) -> Rectangle:
     to_detect = cv.imread("assets/battle_list/window_title.png")
@@ -55,24 +71,54 @@ class BattleList:
 
     return normalized_rects, texts
 
+  def _has_red_frame_around(self) -> bool:
+    global _enemy_target_region
+    if not _enemy_target_region:
+      return False
+
+    x1, y1 = _enemy_target_region.top_left
+    x2, y2 = _enemy_target_region.bottom_right
+    subimage = self.frame[y1:y2, x1:x2]
+    h = subimage.shape[0]
+
+    row = subimage[h // 2]  # center
+    RED = (143, 12, 29)
+    BLACK = (0, 0, 0)
+
+    for px in row:
+      if np.array_equal(px, RED):
+        return True
+      if np.array_equal(px, BLACK):
+        return False
+    return False
+
   def draw_around(self):
     self.window_title.draw_over(self.frame)
     self.topmost_enemy.draw_over(self.frame)
+
     enemy_name_regions, _ = self.enemy_name
     if len(enemy_name_regions):
       for region in enemy_name_regions:
         region.draw_over(self.frame)
+
+    global _enemy_target_region
+    if _enemy_target_region:
+      _enemy_target_region.draw_over(self.frame)
+
     draw_x_inplace(
       self.frame,
       self.topmost_enemy.center,
       line_length_px=self.topmost_enemy.height,
-      color=255,
-      thickness=1,
+      color=(0, 255, 255),
+      thickness=2,
     )
 
   def try_action(self):
+    if self._has_red_frame_around():
+      return
+
     _, texts = self.enemy_name
-    if len(texts) == 0 or datetime.now() - self.last_action_time < timedelta(seconds=5):
+    if len(texts) == 0 or datetime.now() - self.last_action_time < timedelta(seconds=2):
       return
 
     before = self.mouse.position
