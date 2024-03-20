@@ -1,38 +1,28 @@
-from src.battle_list.identify import (
-  find_window,
-  topmost_enemy_region,
-  text_exist_in_enemy_region,
-)
-from src.image_utils import draw_x_inplace
+# from src.input.basic import click
+from src.battle_list import BattleList
 import cv2 as cv
+# from datetime import datetime, timedelta
 
 
 def eventloop(cap_source: int | str) -> None:
   cap = cv.VideoCapture(cap_source)
   cap.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
   cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
-  cap.set(cv.CAP_PROP_FPS, 30)
+  cap.set(cv.CAP_PROP_FPS, 60)
   window_name = "Visualization"
   cv.namedWindow(window_name, cv.WINDOW_GUI_NORMAL)
+  battle_list = BattleList()
   while cap.isOpened():
     ok, frame = cap.read()
     if not ok:
       break
-    window_title = find_window(frame)
-    first_enemy_region = topmost_enemy_region(window_title)
-    text_regions, texts = text_exist_in_enemy_region(frame, first_enemy_region)
+    frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
-    window_title.draw_over(frame)
-    first_enemy_region.draw_over(frame)
-    if len(texts):
-      for region in text_regions:
-        region.draw_over(frame, color=(0, 255, 0), thickness=1)
+    battle_list.calculate_from(frame)
+    battle_list.draw_around()
+    battle_list.try_action()
 
-    draw_x_inplace(
-      frame, first_enemy_region.center, line_length_px=first_enemy_region.height
-    )
-
-    cv.imshow(window_name, frame)
+    cv.imshow(window_name, cv.cvtColor(frame, cv.COLOR_RGB2BGR))
     if cv.waitKey(1) == ord("q"):
       cv.destroyWindow(window_name)
       break

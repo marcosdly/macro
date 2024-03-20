@@ -33,20 +33,26 @@ class Rectangle:
     cv.rectangle(frame, *self.both_ends, color, thickness)
 
 
-def draw_x_inplace(frame: MatLike, center: Tuple[int, int], line_length_px: int):
+def draw_x_inplace(
+  frame: MatLike,
+  center: Tuple[int, int],
+  line_length_px: int,
+  color: Scalar,
+  thickness: int = 2,
+):
   center_x, center_y = center
   size = line_length_px // 2
   cv.line(
     frame,
     (center_x - size, center_y - size),
     (center_x + size, center_y + size),
-    255,
-    2,
+    color,
+    thickness,
   )
   cv.line(
     frame,
     (center_x + size, center_y - size),
     (center_x - size, center_y + size),
-    255,
-    2,
+    color,
+    thickness,
   )
