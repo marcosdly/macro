@@ -1,3 +1,4 @@
+from typing import List
 from src.detection.template import template_detect
 from src.detection.threshold import in_color_range
 from src.detection.text import find_text
@@ -46,7 +47,7 @@ def text_exist_in_enemy_region(frame: MatLike, enemy_region: Rectangle):
   h, w = frame.shape[:-1]
   enemy_image_slice = frame[y1:y2, x1:x2]
   rects, texts = find_text(enemy_image_slice)
-  normalized_rects = []
+  normalized_rects: List[Rectangle] = []
   for rectangle in rects:
     x, y = rectangle.top_left
     normalized_rects.append(
