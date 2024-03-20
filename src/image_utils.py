@@ -29,7 +29,24 @@ class Rectangle:
     pt = self.top_left
     return (pt[0] + self.width // 2, pt[1] + self.height // 2)
 
-  def draw_over(
-    self, frame: MatLike, color: Scalar = (254, 0, 0), thickness: int = 2
-  ):
+  def draw_over(self, frame: MatLike, color: Scalar = (254, 0, 0), thickness: int = 2):
     cv.rectangle(frame, *self.both_ends, color, thickness)
+
+
+def draw_x_inplace(frame: MatLike, center: Tuple[int, int], line_length_px: int):
+  center_x, center_y = center
+  size = line_length_px // 2
+  cv.line(
+    frame,
+    (center_x - size, center_y - size),
+    (center_x + size, center_y + size),
+    255,
+    2,
+  )
+  cv.line(
+    frame,
+    (center_x + size, center_y - size),
+    (center_x - size, center_y + size),
+    255,
+    2,
+  )
