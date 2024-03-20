@@ -1,4 +1,6 @@
 from typing import Tuple
+from cv2.typing import MatLike, Scalar
+import cv2 as cv
 
 
 class Rectangle:
@@ -26,3 +28,8 @@ class Rectangle:
   def center(self):
     pt = self.top_left
     return (pt[0] + self.width // 2, pt[1] + self.height // 2)
+
+  def draw_over(
+    self, frame: MatLike, color: Scalar = (254, 0, 0), thickness: int = 2
+  ):
+    cv.rectangle(frame, *self.both_ends, color, thickness)
