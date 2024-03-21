@@ -1,5 +1,10 @@
-from src.eventloop import eventloop
+import eel
+
+
+def main():
+  eel.init("web_client/dist")
+  eel.start("index.html", block=True)
+
 
 if __name__ == "__main__":
-    capture_index = 2
-    eventloop(capture_index)
+  main()
