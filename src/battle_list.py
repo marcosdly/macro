@@ -14,9 +14,10 @@ class BattleList:
     self.last_action_time = datetime.now()
     self.mouse = Controller()
 
-  def calculate_from(self, frame: MatLike):
+  def calculate_from(self, frame: MatLike, *, calc_win_title_pos: bool = False):
     self.frame = frame
-    self.window_title = self._window_title()
+    if calc_win_title_pos or getattr(self, "window_title", None) is None:
+      self.window_title = self._window_title()
     self.topmost_enemy = self._topmost_enemy()
 
     x, y = self.topmost_enemy.top_left
