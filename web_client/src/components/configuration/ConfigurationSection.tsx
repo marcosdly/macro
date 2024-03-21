@@ -1,4 +1,6 @@
 import { Section, SectionButton } from "../common/Section";
+import { SelectVideoInput } from "./SelectVideoInput";
+import "./configuration.scss";
 
 export const ConfigurationSectionButton = () => (
   <>
@@ -9,7 +11,7 @@ export const ConfigurationSectionButton = () => (
 export function ConfigurationSection() {
   return (
     <Section>
-      <p>config</p>
+      <SelectVideoInput />
     </Section>
   );
 }

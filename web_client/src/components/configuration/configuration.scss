@@ -1,0 +1,13 @@
+#configuration-select-video-input {
+  display: flex;
+  flex-direction: row;
+
+  .dropdown {
+    margin-right: 0.5rem;
+  }
+
+  #video-input {
+    width: 100%;
+    vertical-align: middle;
+  }
+}
