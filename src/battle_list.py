@@ -1,4 +1,5 @@
 from typing import List
+import numpy as np
 from src.detection.template import template_detect
 from src.detection.text import find_text
 from src.image_utils import Rectangle, draw_x_inplace, Color
@@ -13,6 +14,8 @@ class BattleList:
   def __init__(self):
     self.last_action_time = datetime.now()
     self.mouse = Controller()
+    self.clicked_once = False
+    self.confirmed_target_once = False
 
   def calculate_from(self, frame: MatLike, *, calc_win_title_pos: bool = False):
     self.frame = frame
@@ -24,6 +27,9 @@ class BattleList:
     self.enemy_target_region = Rectangle(
       (x, y), (x + 30, y + self.topmost_enemy.height)
     )
+
+    self.clicked_once = False
+    self.confirmed_target_once = False
 
   def _window_title(self) -> Rectangle:
     to_detect = cv.imread("assets/battle_list/window_title.png")
@@ -84,6 +90,7 @@ class BattleList:
   def draw_around(self):
     self.window_title.draw_over(self.frame)
     self.topmost_enemy.draw_over(self.frame)
+    self.enemy_target_region.draw_over(self.frame)
 
     draw_x_inplace(
       self.frame,
@@ -102,6 +109,19 @@ class BattleList:
     self.mouse.position = before
     self.last_action_time = datetime.now()
 
+  def _has_any_pitch_black(self):
+    x1, y1 = self.enemy_target_region.top_left
+    x2, y2 = self.enemy_target_region.bottom_right
+    region = self.frame[y1:y2, x1:x2]
+    reshaped = region.reshape(-1, region.shape[-1])
+
+    for arr in reshaped:
+      truth_table = arr < [30, 30, 30]
+      if np.all(truth_table):
+        return True
+
+    return False
+
   def try_action(self):
     if datetime.now() - self.last_action_time < timedelta(seconds=2):
       return
@@ -109,11 +129,16 @@ class BattleList:
     red = (130, 50, 50)
     if self._has_color_frame_around(red):
       # already in combat
+      if not self.confirmed_target_once:
+        self.confirmed_target_once = True
       return
 
-    if self._has_color_frame_around((0, 0, 0)):
-      # getting hit
-      self._click_enemy()
+    if not self._has_any_pitch_black():
+      # nothing on screen
+      return
+
+    if self.clicked_once and self.confirmed_target_once:
       return
 
     self._click_enemy()
+    self.clicked_once = True
