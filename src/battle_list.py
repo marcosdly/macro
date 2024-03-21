@@ -97,7 +97,7 @@ class BattleList:
     before = self.mouse.position
     self.mouse.position = self.topmost_enemy.center
     self.mouse.press(Button.left)
-    time.sleep(0.3)
+    time.sleep(0.1)
     self.mouse.release(Button.left)
     self.mouse.position = before
     self.last_action_time = datetime.now()
