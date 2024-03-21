@@ -1,15 +1,22 @@
 import { useState } from "preact/hooks";
 import "./app.scss";
+import { MainContext } from "./lib/context";
+import { SectionAggregator } from "./components/common/Section";
+import { ConfigurationSection } from "./components/configuration/ConfigurationSection";
+import { VNode } from "preact";
 
 export function App() {
-  const [count, setCount] = useState(0);
+  // Create section aggregator object first because the button state is based
+  // on section state with useEffect
+  const aggregator = <SectionAggregator />;
+  const [section, setSection] = useState<VNode>(<ConfigurationSection />);
 
   return (
     <>
-      <button
-        className="btn btn-primary"
-        onClick={() => setCount(count + 1)}
-      >{`Click: ${count}`}</button>
+      <MainContext.Provider value={[section, setSection]}>
+        {aggregator}
+        {section}
+      </MainContext.Provider>
     </>
   );
 }
