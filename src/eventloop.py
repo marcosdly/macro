@@ -10,8 +10,9 @@ def eventloop(cap_source: int | str) -> None:
   cap.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
   cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
   cap.set(cv.CAP_PROP_FPS, fps)
-  window_name = "Visualization"
-  cv.namedWindow(window_name, cv.WINDOW_GUI_NORMAL)
+  if __debug__:
+    window_name = "Visualization"
+    cv.namedWindow(window_name, cv.WINDOW_GUI_NORMAL)
   battle_list = BattleList()
   counter = 0
   while cap.isOpened():
@@ -25,12 +26,10 @@ def eventloop(cap_source: int | str) -> None:
     battle_list.draw_around()
     battle_list.try_action()
 
-    if counter > 300:
-      break
-
-    # cv.imshow(window_name, cv.cvtColor(frame, cv.COLOR_RGB2BGR))
-    # if cv.waitKey(1) == ord("q"):
-    #   cv.destroyWindow(window_name)
-    #   break
+    if __debug__:
+      cv.imshow(window_name, cv.cvtColor(frame, cv.COLOR_RGB2BGR))
+      if cv.waitKey(1) == ord("q"):
+        cv.destroyWindow(window_name)
+        break
 
   cap.release()
