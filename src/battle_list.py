@@ -8,8 +8,6 @@ from pynput.mouse import Controller, Button
 import time
 import cv2 as cv
 
-_enemy_target_region: Rectangle | None = None
-
 
 class BattleList:
   def __init__(self):
@@ -20,20 +18,11 @@ class BattleList:
     self.frame = frame
     self.window_title = self._window_title()
     self.topmost_enemy = self._topmost_enemy()
-    self.enemy_name = self._enemy_name()
 
-    global _enemy_target_region
-    _, texts = self.enemy_name
-    if not _enemy_target_region and len(texts):
-      _enemy_target_region = self._enemy_target_region()
-
-  def _enemy_target_region(self) -> Rectangle | None:
-    rectangles, _ = self.enemy_name
-    if not len(rectangles):
-      return None
-    leftmost = min(rectangles, key=lambda r: r.top_left[0])
     x, y = self.topmost_enemy.top_left
-    return Rectangle((x, y), (leftmost.top_left[0], y + self.topmost_enemy.height))
+    self.enemy_target_region = Rectangle(
+      (x, y), (x + 30, y + self.topmost_enemy.height)
+    )
 
   def _window_title(self) -> Rectangle:
     to_detect = cv.imread("assets/battle_list/window_title.png")
@@ -71,12 +60,11 @@ class BattleList:
     return normalized_rects, texts
 
   def _has_color_frame_around(self, color: Scalar) -> bool:
-    global _enemy_target_region
-    if not _enemy_target_region:
+    if not self.enemy_target_region:
       return False
 
-    x1, y1 = _enemy_target_region.top_left
-    x2, y2 = _enemy_target_region.bottom_right
+    x1, y1 = self.enemy_target_region.top_left
+    x2, y2 = self.enemy_target_region.bottom_right
     subimage = self.frame[y1:y2, x1:x2]
     h = subimage.shape[0]
 
@@ -95,15 +83,6 @@ class BattleList:
   def draw_around(self):
     self.window_title.draw_over(self.frame)
     self.topmost_enemy.draw_over(self.frame)
-
-    enemy_name_regions, _ = self.enemy_name
-    if len(enemy_name_regions):
-      for region in enemy_name_regions:
-        region.draw_over(self.frame)
-
-    global _enemy_target_region
-    if _enemy_target_region:
-      _enemy_target_region.draw_over(self.frame)
 
     draw_x_inplace(
       self.frame,
@@ -134,11 +113,6 @@ class BattleList:
     if self._has_color_frame_around((0, 0, 0)):
       # getting hit
       self._click_enemy()
-      return
-
-    _, texts = self.enemy_name
-    if len(texts) == 0:
-      # no enemy found
       return
 
     self._click_enemy()
