@@ -1,13 +1,12 @@
-from typing import List, Tuple
+from typing import List
 from src.detection.template import template_detect
 from src.detection.text import find_text
-from src.image_utils import Rectangle, draw_x_inplace
-from cv2.typing import MatLike
+from src.image_utils import Rectangle, draw_x_inplace, Color
+from cv2.typing import MatLike, Scalar
 from datetime import datetime, timedelta
 from pynput.mouse import Controller, Button
 import time
 import cv2 as cv
-import numpy as np
 
 _enemy_target_region: Rectangle | None = None
 
@@ -71,7 +70,7 @@ class BattleList:
 
     return normalized_rects, texts
 
-  def _has_red_frame_around(self) -> bool:
+  def _has_color_frame_around(self, color: Scalar) -> bool:
     global _enemy_target_region
     if not _enemy_target_region:
       return False
@@ -82,14 +81,15 @@ class BattleList:
     h = subimage.shape[0]
 
     row = subimage[h // 2]  # center
-    RED = (143, 12, 29)
-    BLACK = (0, 0, 0)
-
-    for px in row:
-      if np.array_equal(px, RED):
-        return True
-      if np.array_equal(px, BLACK):
-        return False
+    specific_pixel = row[4]
+    threshold = Color(*color)
+    px_color = Color(*specific_pixel)
+    if (
+      px_color.red >= threshold.red
+      and px_color.green < threshold.green
+      and px_color.blue < threshold.blue
+    ):
+      return True
     return False
 
   def draw_around(self):
@@ -113,14 +113,7 @@ class BattleList:
       thickness=2,
     )
 
-  def try_action(self):
-    if self._has_red_frame_around():
-      return
-
-    _, texts = self.enemy_name
-    if len(texts) == 0 or datetime.now() - self.last_action_time < timedelta(seconds=2):
-      return
-
+  def _click_enemy(self):
     before = self.mouse.position
     self.mouse.position = self.topmost_enemy.center
     self.mouse.press(Button.left)
@@ -128,3 +121,24 @@ class BattleList:
     self.mouse.release(Button.left)
     self.mouse.position = before
     self.last_action_time = datetime.now()
+
+  def try_action(self):
+    if datetime.now() - self.last_action_time < timedelta(seconds=2):
+      return
+
+    red = (130, 50, 50)
+    if self._has_color_frame_around(red):
+      # already in combat
+      return
+
+    if self._has_color_frame_around((0, 0, 0)):
+      # getting hit
+      self._click_enemy()
+      return
+
+    _, texts = self.enemy_name
+    if len(texts) == 0:
+      # no enemy found
+      return
+
+    self._click_enemy()

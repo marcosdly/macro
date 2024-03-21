@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import NamedTuple, Tuple
 from cv2.typing import MatLike, Scalar
 import cv2 as cv
 
@@ -56,3 +56,9 @@ def draw_x_inplace(
     color,
     thickness,
   )
+
+
+class Color(NamedTuple):
+  red: int
+  green: int
+  blue: int
