@@ -1,4 +1,4 @@
-import { SectionButton } from "../common/Section";
+import { Section, SectionButton } from "../common/Section";
 
 export const StatusSectionButton = () => (
   <>
@@ -8,8 +8,8 @@ export const StatusSectionButton = () => (
 
 export function StatusSection() {
   return (
-    <>
+    <Section>
       <p>status</p>
-    </>
+    </Section>
   );
 }

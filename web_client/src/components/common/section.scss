@@ -1,0 +1,23 @@
+#section-aggregator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+
+  > button:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+
+  > button {
+    width: 180px;
+  }
+}
+
+#section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#section-content {
+  width: 90%;
+}

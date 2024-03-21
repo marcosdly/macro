@@ -1,4 +1,4 @@
-import { SectionButton } from "../common/Section";
+import { Section, SectionButton } from "../common/Section";
 
 export const ConfigurationSectionButton = () => (
   <>
@@ -8,8 +8,8 @@ export const ConfigurationSectionButton = () => (
 
 export function ConfigurationSection() {
   return (
-    <>
+    <Section>
       <p>config</p>
-    </>
+    </Section>
   );
 }
