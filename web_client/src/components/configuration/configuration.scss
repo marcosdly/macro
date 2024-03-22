@@ -6,8 +6,18 @@
     margin-right: 0.5rem;
   }
 
-  #video-input {
-    width: 100%;
+  #video-input-index,
+  #video-input-name {
     vertical-align: middle;
+    margin-right: 0.5rem;
+    text-align: center;
+  }
+
+  #video-input-index {
+    width: 3rem;
+  }
+
+  #video-input-name {
+    width: 100%;
   }
 }
