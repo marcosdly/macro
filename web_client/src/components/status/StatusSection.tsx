@@ -1,4 +1,6 @@
 import { Section, SectionButton } from "../common/Section";
+import { Start } from "./Start";
+import "./status.scss";
 
 export const StatusSectionButton = () => (
   <>
@@ -9,7 +11,7 @@ export const StatusSectionButton = () => (
 export function StatusSection() {
   return (
     <Section>
-      <p>status</p>
+      <Start />
     </Section>
   );
 }
