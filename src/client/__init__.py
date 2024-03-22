@@ -1,3 +1,4 @@
+import src.client.configuration
 from src.client.common import config_path, config_dir
 import os
 
