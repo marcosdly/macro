@@ -10,5 +10,6 @@ export default defineConfig({
   build: {
     assetsDir: "",
     copyPublicDir: true,
+    sourcemap: true,
   },
 });
