@@ -1,4 +1,5 @@
 import src.client.configuration
+import src.client.status
 from src.client.common import config_path, config_dir
 import os
 

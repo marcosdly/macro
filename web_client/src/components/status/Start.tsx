@@ -10,23 +10,30 @@ function StartButtons() {
 
   const [icon, setIcon] = useState(<PlayIcon />);
 
-  const playOnClick = (ev: MouseEvent) => {
+  const playOnClick = async (ev: MouseEvent) => {
     ev.preventDefault();
     const playButton = playRef.current! as HTMLButtonElement;
     const stopButton = stopRef.current! as HTMLButtonElement;
-    setIcon(<PlaySpinner />);
-    playButton.disabled = true;
-    stopButton.disabled = false;
+    const eelCallback = await eel.setRunningState(true);
+    eelCallback(async (ok) => {
+      if (!ok) return;
+      setIcon(<PlaySpinner />);
+      playButton.disabled = true;
+      stopButton.disabled = false;
+    });
   };
 
-  const stopOnClick = (ev: MouseEvent) => {
+  const stopOnClick = async (ev: MouseEvent) => {
     ev.preventDefault();
     const playButton = playRef.current! as HTMLButtonElement;
     const stopButton = stopRef.current! as HTMLButtonElement;
-    if (!playButton.disabled) return;
-    setIcon(<PlayIcon />);
-    stopButton.disabled = true;
-    playButton.disabled = false;
+    const eelCallback = await eel.setRunningState(false);
+    eelCallback(async (ok) => {
+      if (!ok) return;
+      setIcon(<PlayIcon />);
+      stopButton.disabled = true;
+      playButton.disabled = false;
+    });
   };
 
   return (
@@ -55,6 +62,19 @@ function StartButtons() {
 }
 
 function Visualize() {
+  const ref = createRef();
+
+  const click = async (ev: MouseEvent) => {
+    ev.preventDefault();
+    const button = ref.current! as HTMLInputElement;
+    const state = Boolean(button.checked);
+    const eelCallback = await eel.setVisualizeState(state);
+    eelCallback(async (ok) => {
+      if (ok) button.checked = state;
+      else button.checked = false;
+    });
+  };
+
   return (
     <div id="status-start-visualize" className="form-check form-switch">
       <input
@@ -63,6 +83,8 @@ function Visualize() {
         className="form-check-input"
         role="switch"
         autocomplete="off"
+        ref={ref}
+        onClick={click}
       />
       <label htmlFor="btn-check-outlined" className="form-check-label">
         Visualize

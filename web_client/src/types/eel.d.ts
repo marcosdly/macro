@@ -12,6 +12,8 @@ declare interface Eel {
   // Exposed by Python, Javascript will use
   getOBSInputOptions(): EelPromise<string>;
   setOBSInputOptions(title: string, index: number): EelPromise<void>;
+  setRunningState(state: boolean): EelPromise<boolean>;
+  setVisualizeState(state: boolean): EelPromise<boolean>;
 }
 
 declare const eel: Eel;
