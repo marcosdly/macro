@@ -12,4 +12,8 @@ export default defineConfig({
     copyPublicDir: true,
     sourcemap: true,
   },
+  esbuild: {
+    minifyIdentifiers: false,
+    keepNames: true,
+  },
 });

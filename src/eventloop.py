@@ -1,7 +1,7 @@
-# from src.input.basic import click
 from src.battle_list import BattleList
 import cv2 as cv
-# from datetime import datetime, timedelta
+from src.state import State
+import eel
 
 
 def eventloop(cap_source: int | str) -> None:
@@ -10,11 +10,14 @@ def eventloop(cap_source: int | str) -> None:
   cap.set(cv.CAP_PROP_FRAME_WIDTH, 1920)
   cap.set(cv.CAP_PROP_FRAME_HEIGHT, 1080)
   cap.set(cv.CAP_PROP_FPS, fps)
-  if __debug__:
-    window_name = "Visualization"
+
+  window_name = "Visualization"
+  if State.visualize:
     cv.namedWindow(window_name, cv.WINDOW_GUI_NORMAL)
+
   battle_list = BattleList()
   counter = 0
+
   while cap.isOpened():
     ok, frame = cap.read()
     if not ok:
@@ -22,14 +25,22 @@ def eventloop(cap_source: int | str) -> None:
     counter += 1
     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
-    battle_list.calculate_from(frame, calc_win_title_pos=counter % fps == 0)
-    battle_list.draw_around()
-    battle_list.try_action()
+    try:
+      battle_list.calculate_from(frame, calc_win_title_pos=counter % fps == 0)
+      battle_list.try_action()
+    except:
+      cv.destroyAllWindows()
+      break
 
-    if __debug__:
+    if State.visualize:
+      battle_list.draw_around()
       cv.imshow(window_name, cv.cvtColor(frame, cv.COLOR_RGB2BGR))
-      if cv.waitKey(1) == ord("q"):
-        cv.destroyWindow(window_name)
-        break
+      cv.waitKey(1)
+
+    if not State.running:
+      cv.destroyAllWindows()
+      break
+
+    eel.sleep(0.3)
 
   cap.release()

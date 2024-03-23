@@ -4,6 +4,7 @@ import { MainContext } from "./lib/context";
 import { SectionAggregator } from "./components/common/Section";
 import { ConfigurationSection } from "./components/configuration/ConfigurationSection";
 import { VNode } from "preact";
+import "./lib/eel";
 
 export function App() {
   // Create section aggregator object first because the button state is based

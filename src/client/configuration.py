@@ -1,12 +1,8 @@
-import eel
 import json
 from src.client.common import config_path
-import cv2 as cv
 from capture_devices import devices
-import win32com.client
 
 
-@eel.expose
 def getOBSInputOptions() -> str:
   found = devices.run_with_param(device_type="video", list_all=True, result_=True)
   if not found:
@@ -26,7 +22,6 @@ def getOBSInputOptions() -> str:
   return json.dumps(devs)
 
 
-@eel.expose
 def setOBSInputOptions(title: str, index: int) -> None:
   with open(config_path, "r") as file:
     config = json.load(file)
