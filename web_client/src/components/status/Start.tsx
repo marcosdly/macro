@@ -117,7 +117,10 @@ function Visualize() {
         ref={ref}
         onClick={click}
       />
-      <label htmlFor="btn-check-outlined" className="form-check-label">
+      <label
+        htmlFor="btn-check-outlined"
+        className="form-check-label text-white"
+      >
         Visualize
       </label>
     </div>
