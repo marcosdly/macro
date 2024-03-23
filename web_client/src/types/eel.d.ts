@@ -14,6 +14,9 @@ declare interface Eel {
   setOBSInputOptions(title: string, index: number): EelPromise<void>;
   setRunningState(state: boolean): EelPromise<boolean>;
   setVisualizeState(state: boolean): EelPromise<boolean>;
+  getOBSConfig(): EelPromise<OBSOption>;
+  getRunningState(): EelPromise<boolean>;
+  getVisualizeState(): EelPromise<boolean>;
 }
 
 declare const eel: Eel;

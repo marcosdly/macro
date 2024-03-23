@@ -13,3 +13,11 @@ def setVisualizeState(state: bool) -> bool:
     return False
   State.visualize = state
   return True
+
+
+def getRunningState() -> bool:
+  return State.running
+
+
+def getVisualizeState() -> bool:
+  return State.visualize

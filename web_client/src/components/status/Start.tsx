@@ -1,9 +1,9 @@
 import { createRef } from "preact";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 function StartButtons() {
-  const playRef = createRef(),
-    stopRef = createRef();
+  const playRef = createRef<HTMLButtonElement>(),
+    stopRef = createRef<HTMLButtonElement>();
 
   const PlayIcon = () => <i class="bi bi-play-fill"></i>;
   const PlaySpinner = () => <div className="spinner-border"></div>;
@@ -12,8 +12,8 @@ function StartButtons() {
 
   const playOnClick = async (ev: MouseEvent) => {
     ev.preventDefault();
-    const playButton = playRef.current! as HTMLButtonElement;
-    const stopButton = stopRef.current! as HTMLButtonElement;
+    const playButton = playRef.current!;
+    const stopButton = stopRef.current!;
     const eelCallback = await eel.setRunningState(true);
     eelCallback(async (ok) => {
       if (!ok) return;
@@ -25,8 +25,8 @@ function StartButtons() {
 
   const stopOnClick = async (ev: MouseEvent) => {
     ev.preventDefault();
-    const playButton = playRef.current! as HTMLButtonElement;
-    const stopButton = stopRef.current! as HTMLButtonElement;
+    const playButton = playRef.current!;
+    const stopButton = stopRef.current!;
     const eelCallback = await eel.setRunningState(false);
     eelCallback(async (ok) => {
       if (!ok) return;
@@ -35,6 +35,26 @@ function StartButtons() {
       playButton.disabled = false;
     });
   };
+
+  const loadState = async () => {
+    const eelCallback = await eel.getRunningState();
+    eelCallback(async (state) => {
+      if (state) {
+        setIcon(<PlaySpinner />);
+        playRef.current!.disabled = true;
+        stopRef.current!.disabled = false;
+        return;
+      }
+
+      setIcon(<PlayIcon />);
+      playRef.current!.disabled = false;
+      stopRef.current!.disabled = true;
+    });
+  };
+
+  useEffect(() => {
+    loadState();
+  }, []);
 
   return (
     <>
@@ -62,7 +82,7 @@ function StartButtons() {
 }
 
 function Visualize() {
-  const ref = createRef();
+  const ref = createRef<HTMLInputElement>();
 
   const click = async (ev: MouseEvent) => {
     ev.preventDefault();
@@ -74,6 +94,17 @@ function Visualize() {
       else button.checked = false;
     });
   };
+
+  const loadState = async () => {
+    const eelCallback = await eel.getVisualizeState();
+    eelCallback(async (state) => {
+      ref.current!.checked = state;
+    });
+  };
+
+  useEffect(() => {
+    loadState();
+  }, []);
 
   return (
     <div id="status-start-visualize" className="form-check form-switch">

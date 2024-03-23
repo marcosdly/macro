@@ -6,7 +6,7 @@ import {
   createRef,
   render,
 } from "preact";
-import { StateUpdater, useState } from "preact/hooks";
+import { StateUpdater, useEffect, useState } from "preact/hooks";
 
 interface DropdownItemProps {
   title: string;
@@ -71,13 +71,26 @@ export class SelectVideoInput extends Component {
           />
         </>
       ));
+      this.ref.current!.innerHTML = "";
       render(components, this.ref.current!);
+    });
+  }
+
+  async loadState() {
+    const eelCallback = await eel.getOBSConfig();
+    eelCallback(async (options) => {
+      if (options.index < 0 || options.title === "") return;
+      this.setOption!(options);
     });
   }
 
   render() {
     const [option, setOption] = useState({} as OBSOption);
     this.setOption = setOption;
+
+    useEffect(() => {
+      this.loadState();
+    }, []);
 
     return (
       <this.VideoInputContext.Provider value={setOption}>

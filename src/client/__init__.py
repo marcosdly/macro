@@ -1,6 +1,15 @@
 from src.client.common import config_path, config_dir
-from src.client.configuration import getOBSInputOptions, setOBSInputOptions
-from src.client.status import setRunningState, setVisualizeState
+from src.client.configuration import (
+  getOBSInputOptions,
+  setOBSInputOptions,
+  getOBSConfig,
+)
+from src.client.status import (
+  setRunningState,
+  setVisualizeState,
+  getRunningState,
+  getVisualizeState,
+)
 import os
 import eel
 
@@ -20,7 +29,10 @@ def expose_all() -> None:
     for func in [
       getOBSInputOptions,
       setOBSInputOptions,
+      getOBSConfig,
       setVisualizeState,
       setRunningState,
+      getVisualizeState,
+      getRunningState,
     ]
   ]

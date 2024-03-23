@@ -1,6 +1,8 @@
 import json
 from src.client.common import config_path
 from capture_devices import devices
+from typing import Dict
+from src.state import State
 
 
 def getOBSInputOptions() -> str:
@@ -30,3 +32,7 @@ def setOBSInputOptions(title: str, index: int) -> None:
 
   with open(config_path, "w") as file:
     json.dump(config, file)
+
+
+def getOBSConfig() -> Dict[str, str | int]:
+  return State.persistent["obsinput"]
