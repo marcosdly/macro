@@ -12,6 +12,15 @@
       "env": {
         "OPENCV_OPENCL_DEVICE": "AMD:GPU:0"
       }
+    },
+    {
+      "name": "Module 'src'",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src",
+      "env": {
+        "OPENCV_OPENCL_DEVICE": "AMD:GPU:0"
+      }
     }
   ]
 }
