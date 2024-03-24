@@ -10,7 +10,7 @@ def main():
   init()
   eel.init("web_client/dist", allowed_extensions=[".js"])
   expose_all()
-  eel.start("index.html", block=False, port=9997)
+  eel.start("index.html", block=False, port=9997, size=(800, 600))
 
   while True:
     eel.sleep(1)
