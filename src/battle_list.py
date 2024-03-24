@@ -6,8 +6,15 @@ from src.image_utils import Rectangle, draw_x_inplace, Color
 from cv2.typing import MatLike, Scalar
 from datetime import datetime, timedelta
 from pynput.mouse import Controller, Button
+from base64 import b64encode
 import eel
 import cv2 as cv
+from enum import StrEnum, auto
+
+
+class EnemyDisplayState(StrEnum):
+  ENEMY = auto()
+  NOTHING = auto()
 
 
 class BattleList:
@@ -16,6 +23,7 @@ class BattleList:
     self.mouse = Controller()
     self.clicked_once = False
     self.confirmed_target_once = False
+    self.last_enemy_display_state = EnemyDisplayState.NOTHING
 
   def calculate_from(self, frame: MatLike, *, calc_win_title_pos: bool = False):
     self.frame = frame
@@ -30,6 +38,24 @@ class BattleList:
 
     self.clicked_once = False
     self.confirmed_target_once = False
+
+  def display_enemy(self, current: EnemyDisplayState, *, force=False):
+    if self.last_enemy_display_state == current and not force:
+      return
+
+    x1, y1 = self.topmost_enemy.top_left
+    x2, y2 = self.topmost_enemy.bottom_right
+    enemy_frame = self.frame[y1:y2, x1:x2]
+    enemy_frame = cv.cvtColor(enemy_frame, cv.COLOR_BGR2RGB)
+    ok, enemy_buffer = cv.imencode(".png", enemy_frame)
+
+    if ok:
+      b64 = b64encode(enemy_buffer)
+      eel.setEnemyImage(b64.decode())
+    else:
+      eel.setEnemyImage("")
+
+    self.last_enemy_display_state = current
 
   def _window_title(self) -> Rectangle:
     to_detect = cv.imread("assets/battle_list/window_title.png")
@@ -135,10 +161,12 @@ class BattleList:
 
     if not self._has_any_pitch_black():
       # nothing on screen
+      self.display_enemy(EnemyDisplayState.NOTHING)
       return
 
     if self.clicked_once and self.confirmed_target_once:
       return
 
+    self.display_enemy(EnemyDisplayState.ENEMY, force=True)
     self._click_enemy()
     self.clicked_once = True

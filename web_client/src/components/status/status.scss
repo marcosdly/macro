@@ -31,3 +31,20 @@
     letter-spacing: 1px;
   }
 }
+
+#status-feedback {
+  display: grid;
+
+  .feedback-image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .image-container {
+      img {
+        width: 150px;
+      }
+    }
+  }
+}
