@@ -16,9 +16,11 @@ def getOBSInputOptions() -> str:
   if isinstance(found, str):
     return json.dumps([{"index": 0, "title": parse_once(found)}])
 
+  ordered_set = list(dict.fromkeys(found))
+
   devs = [
     {"index": i, "title": parse_once(dev_name_str)}
-    for i, dev_name_str in enumerate(found)
+    for i, dev_name_str in enumerate(ordered_set)
   ]
 
   return json.dumps(devs)
